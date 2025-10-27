@@ -9,12 +9,17 @@ import SwiftUI
 import RealityKit
 
 struct ContentView: View {
-    
+
     var body: some View {
-        VStack {
-            Text("Room Designer Demo")
-                .font(.title)
+        VStack(spacing: 20) {
+            Text("房间设计器")
+                .font(.largeTitle)
+
+            Text("准备开始")
+                .font(.headline)
+                .foregroundStyle(.secondary)
         }
+        .padding()
     }
 }
 
