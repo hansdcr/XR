@@ -10,18 +10,41 @@ import RealityKit
 
 struct ContentView: View {
     @Environment(AppState.self) private var appState
+    @Environment(\.openImmersiveSpace) private var openImmersiveSpace
+    @Environment(\.dismissImmersiveSpace) private var dismissImmersiveSpace
 
     var body: some View {
         VStack(spacing: 20) {
             Text("房间设计器")
                 .font(.largeTitle)
 
-            // 显示当前状态
-            Text(appState.isImmersive ? "沉浸模式" : "窗口模式")
-                .font(.headline)
-                .foregroundStyle(.secondary)
+            if !appState.isImmersive {
+                Button("进入沉浸式空间") {
+                    Task {
+                        await openImmersiveSpaceAction()
+                    }
+                }
+                .buttonStyle(.borderedProminent)
+            } else {
+                Button("退出沉浸式空间") {
+                    Task {
+                        await closeImmersiveSpaceAction()
+                    }
+                }
+                .buttonStyle(.bordered)
+            }
         }
         .padding()
+    }
+
+    private func openImmersiveSpaceAction() async {
+        await openImmersiveSpace(id: "ImmersiveSpace")
+        appState.isImmersive = true
+    }
+
+    private func closeImmersiveSpaceAction() async {
+        await dismissImmersiveSpace()
+        appState.isImmersive = false
     }
 }
 
