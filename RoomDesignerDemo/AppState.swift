@@ -9,6 +9,7 @@ import Foundation
 import Observation
 import RealityKit
 import UIKit
+import ARKit
 
 @Observable
 @MainActor
@@ -21,6 +22,9 @@ class AppState {
 
     // 存储所有球体实体
     private(set) var sphereEntities: [UUID: ModelEntity] = [:]
+
+    // ARKit session
+    private let session = ARKitSession()
 
     init() {
         print("--->AppState initialized")
@@ -59,5 +63,10 @@ class AppState {
         sphereEntities[id] = sphere
 
         print("Sphere \(id) created at \(position)")
+    }
+
+    func initializeARKit() async {
+        print("ARKit initialization started")
+        // 后续迭代将添加具体逻辑
     }
 }
