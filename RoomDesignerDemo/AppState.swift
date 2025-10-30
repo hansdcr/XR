@@ -17,6 +17,9 @@ class AppState {
     // 是否在沉浸式空间中
     var isImmersive = false
 
+    // 是否显示预览球体
+    var showPreviewSphere = false
+
     // 3D 内容的根实体
     let contentRoot = Entity()
 
