@@ -25,6 +25,7 @@ class AppState {
 
     // ARKit session
     private let session = ARKitSession()
+    private let worldTracking = WorldTrackingProvider()
 
     init() {
         print("--->AppState initialized")
@@ -66,7 +67,13 @@ class AppState {
     }
 
     func initializeARKit() async {
-        print("ARKit initialization started")
-        // 后续迭代将添加具体逻辑
+        print("--->ARKit initialization started")
+
+        do {
+            try await session.run([worldTracking])
+            print("--->ARKit session started successfully")
+        } catch {
+            print("--->ARKit session failed: \(error)")
+        }
     }
 }
