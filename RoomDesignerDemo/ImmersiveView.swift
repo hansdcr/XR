@@ -10,14 +10,43 @@ import RealityKit
 
 struct ImmersiveView: View {
     @Environment(AppState.self) private var appState
+    @State private var previewSphere: ModelEntity?
 
     var body: some View {
         RealityView { content in
             content.add(appState.contentRoot)
+
+            // 创建预览球体
+            let preview = createPreviewSphere()
+            previewSphere = preview
+
+            // 创建头部锚点
+            let headAnchor = AnchorEntity(.head)
+            headAnchor.addChild(preview)
+            content.add(headAnchor)
+
             print("--->Root entity added to scene")
+            print("--->Preview sphere created")
         }
         .task {
             await appState.initializeARKit()
         }
+    }
+
+    private func createPreviewSphere() -> ModelEntity {
+        let mesh = MeshResource.generateSphere(radius: 0.1)
+
+        // 半透明灰色材质
+        var material = SimpleMaterial()
+        material.color = .init(
+            tint: .gray.withAlphaComponent(0.5)
+        )
+
+        let sphere = ModelEntity(mesh: mesh, materials: [material])
+        sphere.position = [0, 0, -1]  // 头部前方1米
+        sphere.name = "PreviewSphere"
+        sphere.isEnabled = false  // 初始隐藏
+
+        return sphere
     }
 }
