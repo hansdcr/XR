@@ -26,12 +26,19 @@ struct ContentView: View {
                 }
                 .buttonStyle(.borderedProminent)
             } else {
-                Button("退出沉浸式空间") {
-                    Task {
-                        await closeImmersiveSpaceAction()
+                VStack(spacing: 15) {
+                    Button(appState.showPreviewSphere ? "取消放置" : "添加球体") {
+                        appState.showPreviewSphere.toggle()
                     }
+                    .buttonStyle(.borderedProminent)
+
+                    Button("退出沉浸式空间") {
+                        Task {
+                            await closeImmersiveSpaceAction()
+                        }
+                    }
+                    .buttonStyle(.bordered)
                 }
-                .buttonStyle(.bordered)
             }
         }
         .padding()
