@@ -31,6 +31,10 @@ struct ImmersiveView: View {
         .task {
             await appState.initializeARKit()
         }
+        .onChange(of: appState.showPreviewSphere) { _, newValue in
+            previewSphere?.isEnabled = newValue
+            print("--->Preview sphere visible: \(newValue)")
+        }
     }
 
     private func createPreviewSphere() -> ModelEntity {
