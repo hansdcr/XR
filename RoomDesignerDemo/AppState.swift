@@ -26,34 +26,31 @@ class AppState {
 
     func setupContentEntity() {
         contentRoot.name = "ContentRoot"
-        createTestSphere()
+
+        // 创建多个球体
+        createColoredSphere(color: .red, position: [-0.3, 1.5, -1])
+        createColoredSphere(color: .green, position: [0, 1.5, -1])
+        createColoredSphere(color: .blue, position: [0.3, 1.5, -1])
+
         print("--->Content entity setup complete")
     }
 
-    private func createTestSphere() {
-        // 创建球体网格
+    private func createColoredSphere(
+        color: UIColor,
+        position: SIMD3<Float>
+    ) {
         let mesh = MeshResource.generateSphere(radius: 0.1)
-
-        // 创建材质（绿色）
         let material = SimpleMaterial(
-            color: .green,
+            color: color,
             roughness: 0.2,
             isMetallic: true
         )
 
-        // 创建模型实体
-        let sphere = ModelEntity(
-            mesh: mesh,
-            materials: [material]
-        )
+        let sphere = ModelEntity(mesh: mesh, materials: [material])
+        sphere.position = position
+        sphere.name = "Sphere_\(color.description)"
 
-        // 设置位置（在用户前方1米）
-        sphere.position = [0, 1.5, -1]
-        sphere.name = "TestSphere"
-
-        // 添加到根实体
         contentRoot.addChild(sphere)
-
-        print("Test sphere created at position: \(sphere.position)")
+        print("Sphere created at \(position)")
     }
 }
