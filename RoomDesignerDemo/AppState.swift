@@ -19,6 +19,9 @@ class AppState {
     // 3D 内容的根实体
     let contentRoot = Entity()
 
+    // 存储所有球体实体
+    private(set) var sphereEntities: [UUID: ModelEntity] = [:]
+
     init() {
         print("--->AppState initialized")
         setupContentEntity()
@@ -48,9 +51,13 @@ class AppState {
 
         let sphere = ModelEntity(mesh: mesh, materials: [material])
         sphere.position = position
-        sphere.name = "Sphere_\(color.description)"
+
+        let id = UUID()
+        sphere.name = "Sphere_\(id)"
 
         contentRoot.addChild(sphere)
-        print("Sphere created at \(position)")
+        sphereEntities[id] = sphere
+
+        print("Sphere \(id) created at \(position)")
     }
 }
