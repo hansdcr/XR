@@ -11,5 +11,7 @@
 		<key>UISceneConfigurations</key>
 		<dict/>
 	</dict>
+	<key>NSWorldSensingUsageDescription</key>
+	<string>应用需要扫描房间以放置虚拟物体</string>
 </dict>
 </plist>
