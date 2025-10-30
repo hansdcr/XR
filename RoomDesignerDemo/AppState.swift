@@ -19,12 +19,12 @@ class AppState {
     let contentRoot = Entity()
 
     init() {
-        print("AppState initialized")
+        print("--->AppState initialized")
         setupContentEntity()
     }
 
     func setupContentEntity() {
         contentRoot.name = "ContentRoot"
-        print("Content entity setup complete")
+        print("--->Content entity setup complete")
     }
 }

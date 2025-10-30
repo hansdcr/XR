@@ -6,12 +6,15 @@
 //
 
 import SwiftUI
+import RealityKit
 
 struct ImmersiveView: View {
     @Environment(AppState.self) private var appState
 
     var body: some View {
-        Text("沉浸式空间")
-            .font(.title)
+        RealityView { content in
+            content.add(appState.contentRoot)
+            print("--->Root entity added to scene")
+        }
     }
 }
