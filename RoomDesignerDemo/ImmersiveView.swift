@@ -16,5 +16,8 @@ struct ImmersiveView: View {
             content.add(appState.contentRoot)
             print("--->Root entity added to scene")
         }
+        .task {
+            await appState.initializeARKit()
+        }
     }
 }
