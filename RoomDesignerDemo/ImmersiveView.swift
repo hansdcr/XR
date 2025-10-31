@@ -51,6 +51,15 @@ struct ImmersiveView: View {
         sphere.name = "PreviewSphere"
         sphere.isEnabled = false  // 初始隐藏
 
+        // 添加碰撞形状
+        sphere.generateCollisionShapes(recursive: false)
+
+        // 添加输入目标组件（允许间接输入：视线+手势）
+        sphere.components.set(
+            InputTargetComponent(allowedInputTypes: [.indirect])
+        )
+
+        print("--->Preview sphere collision enabled")
         return sphere
     }
 }
