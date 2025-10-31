@@ -53,6 +53,9 @@ class AppState {
         contentRoot.addChild(roomRoot)
         contentRoot.addChild(wallRoot)
 
+        // 确保 wallRoot 默认启用
+        wallRoot.isEnabled = true
+
         // 创建多个球体
         createColoredSphere(color: .red, position: [-0.3, 1.5, -1])
         createColoredSphere(color: .green, position: [0, 1.5, -1])
@@ -194,6 +197,7 @@ class AppState {
 
     private func extractWalls(from roomAnchor: RoomAnchor) {
         // 清除旧墙面
+        print("--->Clearing old walls...")
         for (_, wall) in wallEntities {
             wall.removeFromParent()
         }
@@ -213,12 +217,53 @@ class AppState {
         }
     }
 
+    // 重新加载所有墙面（用于更新材质）
+    func reloadWalls() {
+        print("--->Reloading walls...")
+        // 获取第一个房间锚点
+        if let roomAnchor = roomAnchors.values.first {
+            extractWalls(from: roomAnchor)
+        }
+    }
+
     private func createWallEntity(
         from geometry: MeshAnchor.Geometry,
         index: Int,
         roomAnchor: RoomAnchor
     ) {
-        // 下一迭代实现
-        print("--->Wall \(index) detected")
+        print("--->Creating wall entity \(index)...")
+
+        // 转换为网格资源
+        guard let meshResource = geometry.asMeshResource() else {
+            print("--->Failed to convert wall geometry")
+            return
+        }
+        print("--->Mesh resource created successfully")
+
+        // 创建半透明蓝色材质
+        var material = UnlitMaterial()
+        material.color = .init(tint: .blue.withAlphaComponent(0.15))
+        print("--->Material created: blue with 0.15 alpha")
+
+        // 创建实体
+        let wallEntity = ModelEntity(
+            mesh: meshResource,
+            materials: [material]
+        )
+        wallEntity.name = "Wall_\(index)"
+        wallEntity.isEnabled = true
+        print("--->ModelEntity created, name: Wall_\(index)")
+
+        // 应用房间锚点的变换
+        wallEntity.transform = Transform(matrix: roomAnchor.originFromAnchorTransform)
+        print("--->Transform applied: \(wallEntity.transform)")
+
+        // 添加到场景
+        wallRoot.addChild(wallEntity)
+        wallEntities["Wall_\(index)"] = wallEntity
+
+        print("--->Wall \(index) entity created and added to scene")
+        print("--->wallRoot.isEnabled: \(wallRoot.isEnabled)")
+        print("--->wallRoot.children count: \(wallRoot.children.count)")
     }
 }
