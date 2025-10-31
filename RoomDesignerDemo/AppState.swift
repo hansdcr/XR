@@ -29,6 +29,7 @@ class AppState {
     // ARKit session
     private let session = ARKitSession()
     private let worldTracking = WorldTrackingProvider()
+    private let roomTracking = RoomTrackingProvider()
 
     init() {
         print("--->AppState initialized")
@@ -73,8 +74,9 @@ class AppState {
         print("--->ARKit initialization started")
 
         do {
-            try await session.run([worldTracking])
-            print("--->ARKit session started successfully")
+            // 同时运行世界跟踪和房间跟踪
+            try await session.run([worldTracking, roomTracking])
+            print("--->ARKit session started with room tracking")
         } catch {
             print("--->ARKit session failed: \(error)")
         }
@@ -98,5 +100,14 @@ class AppState {
         sphereEntities[id] = sphere
 
         print("--->Sphere placed at \(position)")
+    }
+
+    func removeAllSpheres() {
+        for (id, sphere) in sphereEntities {
+            sphere.removeFromParent()
+            print("--->Sphere \(id) removed")
+        }
+        sphereEntities.removeAll()
+        print("--->All spheres removed")
     }
 }

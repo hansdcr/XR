@@ -32,6 +32,12 @@ struct ContentView: View {
                     }
                     .buttonStyle(.borderedProminent)
 
+                    Button("删除所有球体") {
+                        appState.removeAllSpheres()
+                    }
+                    .buttonStyle(.bordered)
+                    .disabled(appState.sphereEntities.isEmpty)
+
                     Button("退出沉浸式空间") {
                         Task {
                             await closeImmersiveSpaceAction()
