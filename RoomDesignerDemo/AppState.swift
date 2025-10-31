@@ -79,4 +79,24 @@ class AppState {
             print("--->ARKit session failed: \(error)")
         }
     }
+
+    func addSphereAtPosition(_ position: SIMD3<Float>) {
+        let mesh = MeshResource.generateSphere(radius: 0.1)
+        let material = SimpleMaterial(
+            color: .blue,
+            roughness: 0.2,
+            isMetallic: true
+        )
+
+        let sphere = ModelEntity(mesh: mesh, materials: [material])
+        sphere.position = position
+
+        let id = UUID()
+        sphere.name = "Sphere_\(id)"
+
+        contentRoot.addChild(sphere)
+        sphereEntities[id] = sphere
+
+        print("--->Sphere placed at \(position)")
+    }
 }

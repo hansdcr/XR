@@ -35,6 +35,29 @@ struct ImmersiveView: View {
             previewSphere?.isEnabled = newValue
             print("--->Preview sphere visible: \(newValue)")
         }
+        .gesture(
+            SpatialTapGesture()
+                .targetedToAnyEntity()
+                .onEnded { event in
+                    handleTap(event)
+                }
+        )
+    }
+
+    private func handleTap(_ event: EntityTargetValue<SpatialTapGesture.Value>) {
+        guard let previewSphere,
+              event.entity == previewSphere else {
+            return
+        }
+
+        // 获取预览球体的世界位置
+        let worldPosition = previewSphere.position(relativeTo: nil)
+
+        // 在该位置创建球体
+        appState.addSphereAtPosition(worldPosition)
+
+        // 隐藏预览球体
+        appState.showPreviewSphere = false
     }
 
     private func createPreviewSphere() -> ModelEntity {
