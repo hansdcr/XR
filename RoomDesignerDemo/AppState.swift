@@ -121,6 +121,19 @@ class AppState {
         print("--->Room removed: \(anchor.id)")
     }
 
+    private func isSphereInCurrentRoom(position: SIMD3<Float>) -> Bool {
+        // 获取当前房间锚点
+        guard let currentRoom = roomTracking.currentRoomAnchor else {
+            print("--->No current room")
+            return false
+        }
+
+        // 检查位置是否在房间内
+        let isInRoom = currentRoom.contains(position)
+        print("--->Position \(position) in room: \(isInRoom)")
+        return isInRoom
+    }
+
     func addSphereAtPosition(_ position: SIMD3<Float>) {
         let mesh = MeshResource.generateSphere(radius: 0.1)
         let material = SimpleMaterial(
