@@ -85,9 +85,40 @@ class AppState {
             // 同时运行世界跟踪和房间跟踪
             try await session.run([worldTracking, roomTracking])
             print("--->ARKit session started with room tracking")
+
+            // 启动房间更新监听
+            await processRoomUpdates()
         } catch {
             print("--->ARKit session failed: \(error)")
         }
+    }
+
+    private func processRoomUpdates() async {
+        for await update in roomTracking.anchorUpdates {
+            switch update.event {
+            case .added:
+                handleRoomAdded(update.anchor)
+            case .updated:
+                handleRoomUpdated(update.anchor)
+            case .removed:
+                handleRoomRemoved(update.anchor)
+            }
+        }
+    }
+
+    private func handleRoomAdded(_ anchor: RoomAnchor) {
+        roomAnchors[anchor.id] = anchor
+        print("--->Room added: \(anchor.id)")
+    }
+
+    private func handleRoomUpdated(_ anchor: RoomAnchor) {
+        roomAnchors[anchor.id] = anchor
+//        print("--->Room updated: \(anchor.id)")
+    }
+
+    private func handleRoomRemoved(_ anchor: RoomAnchor) {
+        roomAnchors.removeValue(forKey: anchor.id)
+        print("--->Room removed: \(anchor.id)")
     }
 
     func addSphereAtPosition(_ position: SIMD3<Float>) {
