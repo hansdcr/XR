@@ -23,12 +23,16 @@ class AppState {
     // 3D 内容的根实体
     let contentRoot = Entity()
     let roomRoot = Entity()
+    let wallRoot = Entity()
 
     // 存储所有球体实体
     private(set) var sphereEntities: [UUID: ModelEntity] = [:]
 
     // 存储房间锚点
     private var roomAnchors: [UUID: RoomAnchor] = [:]
+
+    // 存储墙面实体
+    private var wallEntities: [String: ModelEntity] = [:]
 
     // ARKit session
     private let session = ARKitSession()
@@ -43,9 +47,11 @@ class AppState {
     func setupContentEntity() {
         contentRoot.name = "ContentRoot"
         roomRoot.name = "RoomRoot"
+        wallRoot.name = "WallRoot"
 
-        // 将 roomRoot 添加到 contentRoot
+        // 将子实体添加到 contentRoot
         contentRoot.addChild(roomRoot)
+        contentRoot.addChild(wallRoot)
 
         // 创建多个球体
         createColoredSphere(color: .red, position: [-0.3, 1.5, -1])
