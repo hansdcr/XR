@@ -114,6 +114,7 @@ class AppState {
 
     private func handleRoomAdded(_ anchor: RoomAnchor) {
         roomAnchors[anchor.id] = anchor
+        extractWalls(from: anchor)
         print("--->Room added: \(anchor.id)")
     }
 
@@ -137,7 +138,7 @@ class AppState {
 
         // 检查位置是否在房间内
         let isInRoom = currentRoom.contains(position)
-        print("--->Position \(position) in room: \(isInRoom)")
+        //print("--->Position \(position) in room: \(isInRoom)")
         return isInRoom
     }
 
@@ -188,6 +189,36 @@ class AppState {
 
             sphere.model?.materials = [material]
         }
-        print("--->Sphere colors updated")
+        //print("--->Sphere colors updated")
+    }
+
+    private func extractWalls(from roomAnchor: RoomAnchor) {
+        // 清除旧墙面
+        for (_, wall) in wallEntities {
+            wall.removeFromParent()
+        }
+        wallEntities.removeAll()
+
+        // 获取墙面几何
+        let walls = roomAnchor.geometries(classifiedAs: .wall)
+
+        print("--->Found \(walls.count) walls in room")
+
+        for (index, wall) in walls.enumerated() {
+            createWallEntity(
+                from: wall,
+                index: index,
+                roomAnchor: roomAnchor
+            )
+        }
+    }
+
+    private func createWallEntity(
+        from geometry: MeshAnchor.Geometry,
+        index: Int,
+        roomAnchor: RoomAnchor
+    ) {
+        // 下一迭代实现
+        print("--->Wall \(index) detected")
     }
 }
