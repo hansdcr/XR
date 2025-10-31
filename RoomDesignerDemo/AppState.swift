@@ -113,6 +113,7 @@ class AppState {
 
     private func handleRoomUpdated(_ anchor: RoomAnchor) {
         roomAnchors[anchor.id] = anchor
+        updateSphereColors()  // 房间更新时重新计算颜色
 //        print("--->Room updated: \(anchor.id)")
     }
 
@@ -136,8 +137,13 @@ class AppState {
 
     func addSphereAtPosition(_ position: SIMD3<Float>) {
         let mesh = MeshResource.generateSphere(radius: 0.1)
+
+        // 根据是否在房间内选择颜色
+        let isInRoom = isSphereInCurrentRoom(position: position)
+        let color: UIColor = isInRoom ? .green : .red
+
         let material = SimpleMaterial(
-            color: .blue,
+            color: color,
             roughness: 0.2,
             isMetallic: true
         )
@@ -151,7 +157,7 @@ class AppState {
         contentRoot.addChild(sphere)
         sphereEntities[id] = sphere
 
-        print("--->Sphere placed at \(position)")
+        print("--->Sphere placed at \(position), color: \(isInRoom ? "green" : "red")")
     }
 
     func removeAllSpheres() {
@@ -161,5 +167,21 @@ class AppState {
         }
         sphereEntities.removeAll()
         print("--->All spheres removed")
+    }
+
+    private func updateSphereColors() {
+        for (_, sphere) in sphereEntities {
+            let isInRoom = isSphereInCurrentRoom(position: sphere.position)
+            let color: UIColor = isInRoom ? .green : .red
+
+            let material = SimpleMaterial(
+                color: color,
+                roughness: 0.2,
+                isMetallic: true
+            )
+
+            sphere.model?.materials = [material]
+        }
+        print("--->Sphere colors updated")
     }
 }
