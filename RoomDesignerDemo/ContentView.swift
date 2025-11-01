@@ -32,16 +32,16 @@ struct ContentView: View {
                     }
                     .buttonStyle(.borderedProminent)
 
-                    Button("切换墙面显示") {
-                        // 临时简单切换，下一迭代会改为完整的选择器
-                        let currentMode = appState.visualizationMode
-                        if currentMode == .walls {
-                            appState.setVisualizationMode(.none)
-                        } else {
-                            appState.setVisualizationMode(.walls)
-                        }
+                    // 可视化模式选择器
+                    Picker("可视化模式", selection: Binding(
+                        get: { appState.visualizationMode },
+                        set: { appState.setVisualizationMode($0) }
+                    )) {
+                        Text("无").tag(VisualizationMode.none)
+                        Text("墙面").tag(VisualizationMode.walls)
+                        Text("遮挡").tag(VisualizationMode.occlusion)
                     }
-                    .buttonStyle(.bordered)
+                    .pickerStyle(.segmented)
 
                     Button("删除所有球体") {
                         appState.removeAllSpheres()
