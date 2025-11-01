@@ -8,13 +8,25 @@
 import Foundation
 import Observation
 import RealityKit
-import UIKit
 import ARKit
+import SwiftUI
+
+// visionOS 中 UIColor 通过 RealityFoundation 可用
+#if canImport(UIKit)
+import UIKit
+#endif
 
 enum VisualizationMode {
     case none      // 不显示
     case walls     // 显示墙面
     case occlusion // 遮挡模式
+}
+
+enum ErrorState: Equatable {
+    case none
+    case notSupported
+    case notAuthorized
+    case sessionError(String)
 }
 
 @Observable
@@ -28,6 +40,9 @@ class AppState {
 
     // 可视化模式
     var visualizationMode: VisualizationMode = .none
+
+    // 错误状态
+    var errorState: ErrorState = .none
 
     // 3D 内容的根实体
     let contentRoot = Entity()
@@ -96,17 +111,46 @@ class AppState {
         print("Sphere \(id) created at \(position)")
     }
 
+    private func checkAuthorization() async -> Bool {
+        let authorization = await ARKitSession().queryAuthorization(
+            for: [.worldSensing]
+        )
+
+        if authorization[.worldSensing] == .denied {
+            errorState = .notAuthorized
+            return false
+        }
+
+        return true
+    }
+
     func initializeARKit() async {
         print("--->ARKit initialization started")
+
+        // 检查权限
+        guard await checkAuthorization() else {
+            print("--->Authorization denied")
+            return
+        }
+
+        // 检查支持性
+        guard WorldTrackingProvider.isSupported,
+              RoomTrackingProvider.isSupported else {
+            errorState = .notSupported
+            print("--->Tracking not supported")
+            return
+        }
 
         do {
             // 同时运行世界跟踪和房间跟踪
             try await session.run([worldTracking, roomTracking])
+            errorState = .none
             print("--->ARKit session started with room tracking")
 
             // 启动房间更新监听
             await processRoomUpdates()
         } catch {
+            errorState = .sessionError(error.localizedDescription)
             print("--->ARKit session failed: \(error)")
         }
     }
