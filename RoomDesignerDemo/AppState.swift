@@ -44,6 +44,9 @@ class AppState {
     // 错误状态
     var errorState: ErrorState = .none
 
+    // 是否正在初始化 ARKit
+    var isInitializing = false
+
     // 3D 内容的根实体
     let contentRoot = Entity()
     let roomRoot = Entity()
@@ -125,6 +128,15 @@ class AppState {
     }
 
     func initializeARKit() async {
+        let startTime = Date()
+        isInitializing = true
+        print("--->🔄 isInitializing = true")
+        defer {
+            let duration = Date().timeIntervalSince(startTime)
+            isInitializing = false
+            print("--->✅ isInitializing = false (用时: \(String(format: "%.3f", duration))秒)")
+        }
+
         print("--->ARKit initialization started")
 
         // 检查权限
@@ -147,8 +159,10 @@ class AppState {
             errorState = .none
             print("--->ARKit session started with room tracking")
 
-            // 启动房间更新监听
-            await processRoomUpdates()
+            // 在后台启动房间更新监听（不阻塞）
+            Task {
+                await processRoomUpdates()
+            }
         } catch {
             errorState = .sessionError(error.localizedDescription)
             print("--->ARKit session failed: \(error)")

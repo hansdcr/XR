@@ -31,7 +31,25 @@ struct ContentView: View {
                 }
                 .buttonStyle(.borderedProminent)
             } else {
-                VStack(spacing: 15) {
+                if appState.isInitializing {
+                    ProgressView("初始化中...")
+                        .onAppear {
+                            print("--->📱 UI: 显示加载指示器")
+                        }
+                        .onDisappear {
+                            print("--->📱 UI: 隐藏加载指示器")
+                        }
+                } else {
+                    VStack(spacing: 15) {
+                    // 球体计数
+                    HStack {
+                        Text("已放置球体:")
+                        Text("\(appState.sphereEntities.count)")
+                            .bold()
+                            .foregroundStyle(.blue)
+                    }
+                    .font(.headline)
+
                     Button(appState.showPreviewSphere ? "取消放置" : "添加球体") {
                         appState.showPreviewSphere.toggle()
                     }
@@ -60,6 +78,7 @@ struct ContentView: View {
                         }
                     }
                     .buttonStyle(.bordered)
+                    }
                 }
             }
         }
