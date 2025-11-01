@@ -18,6 +18,11 @@ struct ContentView: View {
             Text("房间设计器")
                 .font(.largeTitle)
 
+            // 错误信息显示
+            if appState.errorState != .none {
+                errorView
+            }
+
             if !appState.isImmersive {
                 Button("进入沉浸式空间") {
                     Task {
@@ -69,6 +74,29 @@ struct ContentView: View {
     private func closeImmersiveSpaceAction() async {
         await dismissImmersiveSpace()
         appState.isImmersive = false
+    }
+
+    @ViewBuilder
+    private var errorView: some View {
+        VStack(spacing: 10) {
+            Image(systemName: "exclamationmark.triangle.fill")
+                .font(.largeTitle)
+                .foregroundStyle(.red)
+
+            switch appState.errorState {
+            case .none:
+                EmptyView()
+            case .notSupported:
+                Text("设备不支持房间跟踪")
+            case .notAuthorized:
+                Text("需要世界感知权限")
+            case .sessionError(let message):
+                Text("会话错误: \(message)")
+            }
+        }
+        .padding()
+        .background(.red.opacity(0.1))
+        .cornerRadius(10)
     }
 }
 
