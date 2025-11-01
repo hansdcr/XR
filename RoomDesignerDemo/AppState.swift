@@ -20,6 +20,9 @@ class AppState {
     // 是否显示预览球体
     var showPreviewSphere = false
 
+    // 是否显示墙面
+    var showWalls = false
+
     // 3D 内容的根实体
     let contentRoot = Entity()
     let roomRoot = Entity()
@@ -177,6 +180,12 @@ class AppState {
         }
         sphereEntities.removeAll()
         print("--->All spheres removed")
+    }
+
+    func toggleWallVisibility() {
+        showWalls.toggle()
+        wallRoot.isEnabled = showWalls
+        print("--->Walls visible: \(showWalls)")
     }
 
     private func updateSphereColors() {

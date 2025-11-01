@@ -32,6 +32,11 @@ struct ContentView: View {
                     }
                     .buttonStyle(.borderedProminent)
 
+                    Button(appState.showWalls ? "隐藏墙面" : "显示墙面") {
+                        appState.toggleWallVisibility()
+                    }
+                    .buttonStyle(.bordered)
+
                     Button("删除所有球体") {
                         appState.removeAllSpheres()
                     }
