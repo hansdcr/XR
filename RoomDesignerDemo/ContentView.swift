@@ -32,8 +32,14 @@ struct ContentView: View {
                     }
                     .buttonStyle(.borderedProminent)
 
-                    Button(appState.showWalls ? "隐藏墙面" : "显示墙面") {
-                        appState.toggleWallVisibility()
+                    Button("切换墙面显示") {
+                        // 临时简单切换，下一迭代会改为完整的选择器
+                        let currentMode = appState.visualizationMode
+                        if currentMode == .walls {
+                            appState.setVisualizationMode(.none)
+                        } else {
+                            appState.setVisualizationMode(.walls)
+                        }
                     }
                     .buttonStyle(.bordered)
 

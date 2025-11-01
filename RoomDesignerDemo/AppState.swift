@@ -11,6 +11,12 @@ import RealityKit
 import UIKit
 import ARKit
 
+enum VisualizationMode {
+    case none      // 不显示
+    case walls     // 显示墙面
+    case occlusion // 遮挡模式
+}
+
 @Observable
 @MainActor
 class AppState {
@@ -20,8 +26,8 @@ class AppState {
     // 是否显示预览球体
     var showPreviewSphere = false
 
-    // 是否显示墙面
-    var showWalls = false
+    // 可视化模式
+    var visualizationMode: VisualizationMode = .none
 
     // 3D 内容的根实体
     let contentRoot = Entity()
@@ -121,6 +127,10 @@ class AppState {
     private func handleRoomAdded(_ anchor: RoomAnchor) {
         roomAnchors[anchor.id] = anchor
         extractWalls(from: anchor)
+
+        // 创建遮挡实体
+        createOcclusionEntity(from: anchor)
+
         print("--->Room added: \(anchor.id)")
     }
 
@@ -182,10 +192,22 @@ class AppState {
         print("--->All spheres removed")
     }
 
-    func toggleWallVisibility() {
-        showWalls.toggle()
-        wallRoot.isEnabled = showWalls
-        print("--->Walls visible: \(showWalls)")
+    func setVisualizationMode(_ mode: VisualizationMode) {
+        visualizationMode = mode
+
+        switch mode {
+        case .none:
+            roomRoot.isEnabled = false
+            wallRoot.isEnabled = false
+        case .walls:
+            roomRoot.isEnabled = false
+            wallRoot.isEnabled = true
+        case .occlusion:
+            roomRoot.isEnabled = true
+            wallRoot.isEnabled = false
+        }
+
+        print("--->Visualization mode: \(mode)")
     }
 
     private func updateSphereColors() {
@@ -274,5 +296,40 @@ class AppState {
         print("--->Wall \(index) entity created and added to scene")
         print("--->wallRoot.isEnabled: \(wallRoot.isEnabled)")
         print("--->wallRoot.children count: \(wallRoot.children.count)")
+    }
+
+    private func createOcclusionEntity(from roomAnchor: RoomAnchor) {
+        print("--->Creating occlusion entity for room...")
+
+        // 获取墙面几何
+        let walls = roomAnchor.geometries(classifiedAs: .wall)
+
+        for (index, wall) in walls.enumerated() {
+            // 转换为网格资源
+            guard let meshResource = wall.asMeshResource() else {
+                print("--->Failed to convert occlusion geometry")
+                continue
+            }
+
+            // 创建遮挡材质
+            let occlusionMaterial = OcclusionMaterial()
+
+            // 创建遮挡实体
+            let occlusionEntity = ModelEntity(
+                mesh: meshResource,
+                materials: [occlusionMaterial]
+            )
+            occlusionEntity.name = "Occlusion_\(index)"
+
+            // 应用房间锚点的变换
+            occlusionEntity.transform = Transform(matrix: roomAnchor.originFromAnchorTransform)
+
+            // 添加到房间根节点
+            roomRoot.addChild(occlusionEntity)
+
+            print("--->Occlusion entity \(index) created")
+        }
+
+        print("--->Occlusion entity creation complete")
     }
 }
